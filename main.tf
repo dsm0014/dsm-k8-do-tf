@@ -49,3 +49,26 @@ resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
     }
   }
 }
+
+
+provider "helm" {
+  kubernetes {
+    host = digitalocean_kubernetes_cluster.kubernetes-cluster.endpoint
+
+    token = digitalocean_kubernetes_cluster.kubernetes-cluster.kube_config[0].token
+    client_certificate     = base64decode(digitalocean_kubernetes_cluster.kubernetes-cluster.kube_config[0].client_certificate)
+    client_key             = base64decode(digitalocean_kubernetes_cluster.kubernetes-cluster.kube_config[0].client_key)
+    cluster_ca_certificate = base64decode(digitalocean_kubernetes_cluster.kubernetes-cluster.kube_config[0].cluster_ca_certificate)
+  }
+}
+
+// Creates a DO LoadBalancer that can be targeted by DNS, and redirects ingress traffic
+resource "helm_release" "ingress_nginx" {
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart = "ingress-nginx"
+  name = "${var.project_name}-ingress-nginx"
+  namespace = var.project_name
+  create_namespace = true
+}
+
+
