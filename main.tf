@@ -35,7 +35,7 @@ provider "digitalocean" {
 resource "digitalocean_kubernetes_cluster" "kubernetes-cluster" {
   name = "${var.project_name}-cluster"
   region = var.do_region
-  version = "1.21.3-do.0"
+  version = "1.21.9-do.0"
 
   node_pool {
     name = "${var.project_name}-pool"
